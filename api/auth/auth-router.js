@@ -19,7 +19,7 @@ router.post("/register", validateRoleName, (req, res, next) => {
 });
 
 
-router.post("/login", checkUsernameExists, (req, res, next) => {
+router.post("/login", checkUsernameExists, async (req, res, next) => {
   /**
     [POST] /api/auth/login { "username": "sue", "password": "1234" }
 
@@ -39,7 +39,31 @@ router.post("/login", checkUsernameExists, (req, res, next) => {
       "role_name": "admin" // the role of the authenticated user
     }
    */
-  res.status(200).json({ message: 'working on login' })
+  
+  try {
+    let { username, password } = req.body;
+    const user = await User.findBy({ username }).first();
+    if (user && bcrypt.compareSync(password, user.password)) {
+      const token = buildToken(user);
+      res.status(200).json({ message: `${user.username} is back!`, token });
+    } else {
+      next({ status: 401, message: 'Invalid Credentials' })
+    }
+  } catch (err){
+    next(err)
+  }
 });
+
+function buildToken(user) {
+  const payload = {
+    subject: user.user_id,
+    username: user.username,
+    role_name: user.role_name
+  }
+  const options = {
+    expiresIn: '1d',
+  }
+  return jwt.sign(payload, JWT_SECRET, options)
+}
 
 module.exports = router;
