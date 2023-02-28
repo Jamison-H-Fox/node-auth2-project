@@ -1,9 +1,9 @@
 const db = require('../../data/db-config.js');
 
 function find() {
-  return db("users as u")
-    .join("roles as r", "u.role_id", "=", "r.role_id")
-    .select("u.user_id", "u.username", "r.role_name as role")
+  return db("users")
+    .join("roles", "users.role_id", "=", "roles.role_id")
+    .select("users.user_id", "users.username", "roles.role_name")
 }
 
 function findBy(filter) {
@@ -20,9 +20,9 @@ function findBy(filter) {
       }
     ]
    */
-  return db("users as u")
-    .join("roles as r", "u.role_id", "=", "r.role_id")
-    .select("u.user_id", "u.username", "r.role_name", "u.password")
+  return db("users")
+    .join("roles", "users.role_id", "=", "roles.role_id")
+    .select("users.user_id", "users.username", "roles.role_name", "users.password")
     .where(filter)
 }
 

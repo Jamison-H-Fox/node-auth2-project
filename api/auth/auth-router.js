@@ -6,20 +6,7 @@ const { JWT_SECRET, BCRYPT_ROUNDS } = require("../secrets"); // use this secret!
 const User = require('../users/users-model');
 
 router.post("/register", validateRoleName, (req, res, next) => {
-  /**
-    [POST] /api/auth/register { "username": "anna", "password": "1234", "role_name": "angel" }
-
-    response:
-    status 201
-    {
-      "user"_id: 3,
-      "username": "anna",
-      "role_name": "angel"
-    }
-   */
-  console.log('after mw role_name:', req.body.role_name)
   let user = req.body;
-  console.log(req.body)
   
   const hash = bcrypt.hashSync(user.password, BCRYPT_ROUNDS)
   user.password = hash;
